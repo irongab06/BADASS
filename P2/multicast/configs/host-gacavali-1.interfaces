@@ -1,0 +1,9 @@
+auto lo
+iface lo inet loopback
+
+# Premier hote du reseau transporte par VXLAN.
+auto eth0
+iface eth0 inet static
+    address 30.1.1.1
+    netmask 255.255.255.0
+    pre-up ip link set eth0 mtu 1450
