@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# routeur_ncardozo-2, multicast VXLAN
+# Underlay address: how the routers reach each other
+/sbin/ip addr add 10.1.1.2/24 dev eth0
+
+# Bridge joining the host port and the tunnel
+/sbin/ip link add br0 type bridge
+/sbin/ip link set br0 up
+
+# VXLAN 10 tunnel: routers find each other through a multicast group
+/sbin/ip link add vxlan10 type vxlan id 10 dev eth0 group 239.1.1.1 dstport 4789
+/sbin/ip link set vxlan10 up
+
+# Connect the host port and the tunnel to the bridge
+/sbin/ip link set eth1 master br0
+/sbin/ip link set vxlan10 master br0
