@@ -1,0 +1,5 @@
+#!/bin/sh
+# host-ncardozo-1: connected to routeur-ncardozo-2 (eth1 <-> eth1)
+# Every host is in 20.1.1.0/24: VXLAN 10 makes them one L2 segment
+
+ip addr add 20.1.1.1/24 dev eth1

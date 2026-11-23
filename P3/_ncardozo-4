@@ -1,0 +1,47 @@
+#! /bin/sh
+# routeur-ncardozo-4: leaf and VTEP for VXLAN 10
+# Uplink: eth2 (10.1.1.10/30) -> routeur-ncardozo-1 (RR). Host port: eth0
+# Loopback 1.1.1.4/32: router-id, BGP session address and VTEP address
+
+# ---------- Layer 1: underlay (OSPF, area 0) -----------------
+vtysh <<'EOF'
+configure terminal
+hostname routeur-ncardozo-4
+ip forwarding
+interface eth2
+ ip address 10.1.1.10/30
+ ip ospf area 0
+exit
+interface lo
+ ip address 1.1.1.4/32
+ ip ospf area 0
+exit
+router ospf
+ ospf router-id 1.1.1.4
+exit
+end
+EOF
+
+# ---------- Layer 2: data plane (VXLAN 10 + bridge) ----------
+/sbin/ip link add br0 type bridge
+/sbin/ip link set br0 up
+/sbin/ip link add vxlan10 type vxlan id 10 dstport 4789 local 1.1.1.4 nolearning
+/sbin/ip link set vxlan10 master br0
+/sbin/ip link set eth0 master br0
+/sbin/ip link set vxlan10 up
+
+# ---------- Layer 3: control plane (iBGP + EVPN) -------------
+vtysh <<'EOF'
+configure terminal
+router bgp 1
+ bgp router-id 1.1.1.4
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.1 remote-as 1
+ neighbor 1.1.1.1 update-source lo
+ address-family l2vpn evpn
+  neighbor 1.1.1.1 activate
+  advertise-all-vni
+ exit-address-family
+exit
+end
+EOF

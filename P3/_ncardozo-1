@@ -1,0 +1,50 @@
+#! /bin/sh
+# routeur-ncardozo-1: spine and BGP route reflector (RR). No VXLAN and no host here
+# Uplinks: eth0 -> routeur-ncardozo-2, eth1 -> routeur-ncardozo-3, eth2 -> routeur-ncardozo-4 (each one a /30)
+# Loopback 1.1.1.1/32: router-id, OSPF identity, BGP session address
+
+# ---------- Layer 1: underlay (OSPF, area 0) ----------
+vtysh <<'EOF'
+configure terminal
+hostname routeur-ncardozo-1
+! Transit router: without this it silently drops VXLAN packets between leaves
+ip forwarding
+interface eth0
+ ip address 10.1.1.1/30
+ ip ospf area 0
+exit
+interface eth1
+ ip address 10.1.1.5/30
+ ip ospf area 0
+exit
+interface eth2
+ ip address 10.1.1.9/30
+ ip ospf area 0
+exit
+interface lo
+ ip address 1.1.1.1/32
+ ip ospf area 0
+exit
+router ospf
+ ospf router-id 1.1.1.1
+exit
+end
+EOF
+
+# ---------- Layer 3: control plane (iBGP + EVPN) ----------
+vtysh <<'EOF'
+configure terminal
+router bgp 1
+ bgp router-id 1.1.1.1
+ no bgp default ipv4-unicast
+ neighbor LEAVES peer-group
+ neighbor LEAVES remote-as 1
+ neighbor LEAVES update-source lo
+ bgp listen range 1.1.1.0/29 peer-group LEAVES
+ address-family l2vpn evpn
+  neighbor LEAVES activate
+  neighbor LEAVES route-reflector-client
+ exit-address-family
+exit
+end
+EOF
