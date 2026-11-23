@@ -8,15 +8,15 @@ run them in GNS3:
 | Image           | Role       | What it contains                                   |
 |-----------------|------------|----------------------------------------------------|
 | `badass-host`   | A computer | Alpine Linux, which includes BusyBox               |
-| `badass-router` | A router   | FRRouting with zebra, BGP, OSPF and IS-IS enabled  |
+| `badass-routeur` | A router   | FRRouting with zebra, BGP, OSPF and IS-IS enabled  |
 
 GNS3 uses these images to create the machines. Every machine name contains the
 login `ncardozo`, as the subject requires.
 
 ```
  ┌────────────────────┐      ┌────────────────────┐
- │  host-ncardozo-1   │      │  router-ncardozo   │
- │  (badass-host)     │      │  (badass-router)   │
+ │  host-ncardozo-1   │      │  routeur-ncardozo  │
+ │  (badass-host)     │      │  (badass-routeur)  │
  └────────────────────┘      └────────────────────┘
 ```
 
@@ -28,7 +28,7 @@ and that we can open a terminal on them. Parts 2 and 3 will connect them.
 | File                          | What it is                                             |
 |-------------------------------|--------------------------------------------------------|
 | `ncardozo_host/Dockerfile`    | Recipe for the host image                              |
-| `ncardozo_router/Dockerfile`  | Recipe for the router image                            |
+| `ncardozo_routeur/Dockerfile`  | Recipe for the router image                            |
 | `P1.gns3project`              | The GNS3 project, exported as a ZIP file               |
 
 ## The two images, explained
@@ -45,7 +45,7 @@ CMD ["/bin/sh"]
 - `CMD ["/bin/sh"]` opens a shell when the machine starts, so GNS3 has a
   terminal to show you.
 
-### The router: `ncardozo_router/Dockerfile`
+### The router: `ncardozo_routeur/Dockerfile`
 
 ```dockerfile
 FROM quay.io/frrouting/frr:10.7.1
@@ -83,7 +83,7 @@ hand:
 
 ```bash
 docker build -t badass-host   P1/ncardozo_host
-docker build -t badass-router P1/ncardozo_router
+docker build -t badass-routeur P1/ncardozo_routeur
 docker images | grep badass
 ```
 
@@ -104,10 +104,10 @@ Other useful commands:
 
 1. Go to *Edit → Preferences → Docker → Docker containers → New*.
 2. Choose the `badass-host:latest` image, and select **telnet** as the console type.
-3. Do the same for `badass-router:latest`.
+3. Do the same for `badass-routeur:latest`.
 4. Drag one host and one router into the project.
 5. Rename them (*right click → Change hostname*) to `host-ncardozo-1` and
-   `router-ncardozo`.
+   `routeur-ncardozo`.
 6. Click the green ▶ button to start them.
 7. Right click a machine → **Console** to open its terminal.
 

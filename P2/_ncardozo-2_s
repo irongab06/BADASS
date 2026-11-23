@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# routeur_ncardozo-2, static VXLAN
+# routeur-ncardozo-2, static VXLAN
 # Underlay address: how the routers reach each other (same subnet as router 1)
 /sbin/ip addr add 10.1.1.2/24 dev eth0
 

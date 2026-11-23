@@ -2,7 +2,7 @@
 #
 #   make check     Report what is installed and what is missing
 #   make install   Install only what is missing, and remember what was added
-#   make P1        Build the two Docker images of Part 1
+#   make P1        Build the two Docker images of Part 1, then open GNS3
 #   make save      Save the two images to a compressed archive
 #   make load      Restore the two images from that archive
 #   make cleanP1   Stop and remove what "make P1" created
@@ -36,7 +36,7 @@ CONFIRM ?= no
 LOGIN ?= ncardozo
 P1_DIR ?= $(or $(wildcard P1),$(wildcard P1),P1)
 P1_HOST ?= $(P1_DIR)/$(LOGIN)_host
-P1_ROUTER ?= $(P1_DIR)/$(LOGIN)_router
+P1_ROUTER ?= $(P1_DIR)/$(LOGIN)_routeur
 
 # Archive used by "make save" and "make load"
 IMAGES_ARCHIVE ?= $(P1_DIR)/badass-images.tar.gz
@@ -56,7 +56,7 @@ TOOLS ?= \
 GROUPS_NEEDED := ubridge libvirt kvm wireshark docker
 
 # Images removed by "make clean": the project's two images and their bases
-IMAGE_RE ?= ^(badass-host|badass-router|alpine|quay\.io/frrouting/frr):
+IMAGE_RE ?= ^(badass-host|badass-routeur|alpine|quay\.io/frrouting/frr):
 
 RESET	= \033[0m
 BOLD	= \033[1m
@@ -113,7 +113,7 @@ endef
 help:
 	printf '$(CYAN)make check$(RESET)    $(DIM)Report what is installed and what is missing$(RESET)\n'
 	printf '$(CYAN)make install$(RESET)  $(DIM)Install only what is missing$(RESET)\n'
-	printf '$(CYAN)make P1$(RESET)       $(DIM)Build the two Docker images of Part 1$(RESET)\n'
+	printf '$(CYAN)make P1$(RESET)       $(DIM)Build the Part 1 images, then open GNS3$(RESET)\n'
 	printf '$(CYAN)make save$(RESET)     $(DIM)Save the two images to $(IMAGES_ARCHIVE)$(RESET)\n'
 	printf '$(CYAN)make load$(RESET)     $(DIM)Restore the two images from $(IMAGES_ARCHIVE)$(RESET)\n'
 	printf '$(CYAN)make cleanP1$(RESET)  $(DIM)Stop and remove what make P1 created$(RESET)\n'
@@ -297,7 +297,7 @@ P1:
 	$(HELPERS)
 	command -v docker > /dev/null 2>&1 || die 'Docker is not installed: run make install'
 	$(SUDO) docker info > /dev/null 2>&1 || die 'Docker daemon is not running'
-	for pair in 'badass-host=$(P1_HOST)' 'badass-router=$(P1_ROUTER)'; do
+	for pair in 'badass-host=$(P1_HOST)' 'badass-routeur=$(P1_ROUTER)'; do
 		image=$${pair%%=*}
 		folder=$${pair#*=}
 		[ -f "$$folder/Dockerfile" ] || die "No Dockerfile found in $$folder"
@@ -307,42 +307,41 @@ P1:
 	info 'Images'
 	$(SUDO) docker images | grep badass
 
-	# GNS3 launch disabled for now: uncomment the lines below to restore it
-	# # The images are built at this point, so GUI problems are only warnings
-	# info 'Opening GNS3'
-	# if ! command -v gns3 > /dev/null 2>&1; then
-	# 	warn 'GNS3 is not installed: run make install'
-	# elif ! tool_runs gns3; then
-	# 	warn "GNS3 does not start: $$(gns3_problem)"
-	# elif [ "$$(id -u)" -eq 0 ]; then
-	# 	warn 'Run make P1 without sudo to open GNS3 as your own user'
-	# elif [ -z "$${DISPLAY:-}$${WAYLAND_DISPLAY:-}" ]; then
-	# 	warn 'No graphical session here: open a terminal from the desktop and run gns3'
-	# elif pgrep -x gns3 > /dev/null 2>&1; then
-	# 	ok 'GNS3 is already open'
-	# else
-	# 	setsid nohup gns3 > /dev/null 2>&1 < /dev/null &
-	# 	gns3_pid=$$!
-	# 	sleep 2
-	# 	if kill -0 "$$gns3_pid" 2> /dev/null; then
-	# 		ok 'GNS3 is starting'
-	# 	else
-	# 		warn 'GNS3 closed right after starting: run gns3 in a terminal to see the error'
-	# 	fi
-	# fi
+	# The images are built at this point, so GUI problems are only warnings
+	info 'Opening GNS3'
+	if ! command -v gns3 > /dev/null 2>&1; then
+		warn 'GNS3 is not installed: run make install'
+	elif ! tool_runs gns3; then
+		warn "GNS3 does not start: $$(gns3_problem)"
+	elif [ "$$(id -u)" -eq 0 ]; then
+		warn 'Run make P1 without sudo to open GNS3 as your own user'
+	elif [ -z "$${DISPLAY:-}$${WAYLAND_DISPLAY:-}" ]; then
+		warn 'No graphical session here: open a terminal from the desktop and run gns3'
+	elif pgrep -x gns3 > /dev/null 2>&1; then
+		ok 'GNS3 is already open'
+	else
+		setsid nohup gns3 > /dev/null 2>&1 < /dev/null &
+		gns3_pid=$$!
+		sleep 2
+		if kill -0 "$$gns3_pid" 2> /dev/null; then
+			ok 'GNS3 is starting'
+		else
+			warn 'GNS3 closed right after starting: run gns3 in a terminal to see the error'
+		fi
+	fi
 
 # Writes both images into one compressed archive, as a backup for another machine.
 save:
 	$(HELPERS)
 	command -v docker > /dev/null 2>&1 || die 'Docker is not installed: run make install'
 	$(SUDO) docker info > /dev/null 2>&1 || die 'Docker daemon is not running'
-	for image in badass-host badass-router; do
+	for image in badass-host badass-routeur; do
 		$(SUDO) docker image inspect "$$image" > /dev/null 2>&1 \
 			|| die "$$image does not exist: run make P1 first"
 	done
 	info 'Saving the images to $(IMAGES_ARCHIVE)'
 	# Write to a temporary file first, so a failure never leaves a broken archive
-	$(SUDO) docker save badass-host badass-router | gzip > '$(IMAGES_ARCHIVE).part'
+	$(SUDO) docker save badass-host badass-routeur | gzip > '$(IMAGES_ARCHIVE).part'
 	mv '$(IMAGES_ARCHIVE).part' '$(IMAGES_ARCHIVE)'
 	size=$$(du -m '$(IMAGES_ARCHIVE)' | cut -f1)
 	ok "Saved $(IMAGES_ARCHIVE) ($$size MB)"
@@ -368,7 +367,7 @@ cleanP1:
 	command -v docker > /dev/null 2>&1 || die 'Docker is not installed: run make install'
 	$(SUDO) docker info > /dev/null 2>&1 || die 'Docker daemon is not running'
 	info 'Cleaning Part 1'
-	for image in badass-host badass-router; do
+	for image in badass-host badass-routeur; do
 		if ! $(SUDO) docker image inspect "$$image" > /dev/null 2>&1; then
 			ok "$$image is already gone"
 			continue

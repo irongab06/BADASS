@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# routeur_ncardozo-2, multicast VXLAN
+# routeur-ncardozo-2, multicast VXLAN
 # Underlay address: how the routers reach each other
 /sbin/ip addr add 10.1.1.2/24 dev eth0
 

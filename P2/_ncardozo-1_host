@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# host_ncardozo-1, VXLAN 10
+# host-ncardozo-1, VXLAN 10
 # A plain machine: no bridge, no tunnel. It only needs an address
 # in the Layer 2 network that VXLAN 10 carries between the routers.
 ip addr add 30.1.1.1/24 dev eth1

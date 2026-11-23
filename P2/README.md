@@ -21,7 +21,7 @@ ways:
           ┌─────────────┤ Switch1  ├─────────────┐
           │  10.1.1.1   └──────────┘   10.1.1.2  │
  ┌────────┴──────────┐                 ┌─────────┴─────────┐
- │ router-ncardozo-1 │                 │ router-ncardozo-2 │
+ │routeur-ncardozo-1 │                 │routeur-ncardozo-2 │
  │  br0 + vxlan10    │                 │  br0 + vxlan10    │
  └────────┬──────────┘                 └─────────┬─────────┘
           │ eth1                                 │ eth1
@@ -34,7 +34,7 @@ ways:
           └───────── same Layer 2 network: 30.1.1.0/24 (VXLAN 10) ─────────┘
 ```
 
-All machines use the images from Part 1 (`badass-router` and `badass-host`).
+All machines use the images from Part 1 (`badass-routeur` and `badass-host`).
 
 ## Words you need to know
 
@@ -56,15 +56,15 @@ router 2 unwraps it → its bridge passes it to host 2.
 
 The file names follow the pattern `_<login>-<number>_<type>`:
 
-| File                          | Machine             | Mode                 |
-|-------------------------------|---------------------|----------------------|
-| `static/_ncardozo-1_host`     | `host-ncardozo-1`   | both modes           |
-| `static/_ncardozo-2_host`     | `host-ncardozo-2`   | both modes           |
-| `static/_ncardozo-1_s`        | `router-ncardozo-1` | static (`s`)         |
-| `static/_ncardozo-2_s`        | `router-ncardozo-2` | static (`s`)         |
-| `multicast/_ncardozo-1_g`     | `router-ncardozo-1` | multicast group (`g`)|
-| `multicast/_ncardozo-2_g`     | `router-ncardozo-2` | multicast group (`g`)|
-| `P2.gns3project`              | all machines        | the GNS3 project, exported as a ZIP file |
+| File                          | Machine              | Mode                 |
+|-------------------------------|----------------------|----------------------|
+| `_ncardozo-1_host`            | `host-ncardozo-1`    | both modes           |
+| `_ncardozo-2_host`            | `host-ncardozo-2`    | both modes           |
+| `_ncardozo-1_s`               | `routeur-ncardozo-1` | static (`s`)         |
+| `_ncardozo-2_s`               | `routeur-ncardozo-2` | static (`s`)         |
+| `_ncardozo-1_g`               | `routeur-ncardozo-1` | multicast group (`g`)|
+| `_ncardozo-2_g`               | `routeur-ncardozo-2` | multicast group (`g`)|
+| `P2.gns3project`              | all machines         | the GNS3 project, exported as a ZIP file |
 
 The hosts do not change between the two modes. Only the routers do.
 
@@ -113,7 +113,7 @@ which host, and then sends directly to it.
 2. Start all the machines with the green ▶ button.
 3. On each machine, open the console (*right click → Console*) and paste the
    content of its file:
-   - hosts: `static/_ncardozo-1_host` and `static/_ncardozo-2_host`
+   - hosts: `_ncardozo-1_host` and `_ncardozo-2_host`
    - routers: the two `_s` files **or** the two `_g` files
 
 > The settings are lost when a machine is stopped. Paste the files again after
