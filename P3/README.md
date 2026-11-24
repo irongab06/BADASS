@@ -35,10 +35,9 @@ les adresses MAC en inondant le réseau, ils se les annoncent avec BGP EVPN.
 | `_gacavali-3_host` | host-gacavali-3 | hôte derrière le routeur 4 |
 | `P3.gns3project` | tous | export ZIP avec topologie et images Docker |
 
-En P2, chaque fichier est un `/etc/network/interfaces` que GNS3 applique au
-démarrage. Ici, ce sont des scripts à coller dans la console : la
-configuration OSPF et BGP passe par `vtysh`, qui n’existe qu’une fois
-FRRouting démarré. Elle est perdue quand l’équipement s’arrête.
+Comme en P2, chaque fichier est un script à coller dans la console de son
+équipement. La configuration OSPF et BGP passe par `vtysh`. Elle est perdue
+quand l’équipement s’arrête.
 
 Chaque script de routeur suit le même plan :
 
