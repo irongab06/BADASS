@@ -16,7 +16,7 @@ VXLAN d’identifiant 10, d’abord en mode statique, puis en mode multicast.
 │  br0 + vxlan10  │                       │  br0 + vxlan10  │
 └───────┬─────────┘                       └─────────┬───────┘
         │ eth1                                 eth1 │
-        │ eth0                                 eth0 │
+        │ eth1                                 eth1 │
 ┌───────┴─────────┐                       ┌─────────┴───────┐
 │ host-gacavali-1 │                       │ host-gacavali-2 │
 │   30.1.1.1/24   │                       │   30.1.1.2/24   │

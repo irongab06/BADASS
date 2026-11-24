@@ -6,7 +6,8 @@
 - _gacavali-2 : Dockerfile du routeur router-gacavali-2 (Alpine avec FRRouting).
 - start.sh : démarrage des services, puis du shell.
 - frr.conf : configuration initiale BGP et OSPF.
-- Makefile : construction des deux images.
+- Makefile : construction, chargement et suppression des deux images.
+- check-env.sh : vérification de la machine (outils, Docker, groupes).
 - P1.gns3project : export ZIP avec topologie et images Docker.
 
 Les services Zebra, BGP, OSPF et IS-IS démarrent automatiquement.
@@ -28,8 +29,11 @@ Ou, avec le Makefile :
 |---|---|
 | `make -C P1` | Construit les deux images. |
 | `make -C P1 check` | Affiche les deux images et la ligne `router bgp` du routeur. |
-| `make -C P1 clean` | Supprime les deux images. |
+| `make -C P1 env` | Vérifie les outils, le service Docker et les groupes de la machine. |
+| `make -C P1 load` | Charge les deux images depuis `P1.gns3project`, sans réseau. |
+| `make -C P1 clean` | Supprime les conteneurs créés à partir des deux images, puis les images. |
 | `make -C P1 re` | Supprime puis reconstruit. |
+| `make -C P1 help` | Affiche cette liste. |
 
 ## Restaurer sur une VM Linux amd64
 
@@ -39,6 +43,8 @@ Extraire la sauvegarde des images :
 python3 -m zipfile -e P1.gns3project /tmp/badass-p1-import
 docker image load -i /tmp/badass-p1-import/docker-images-amd64.tar
 ```
+
+`make -C P1 load` lance ces deux commandes.
 
 Importer ensuite P1.gns3project dans GNS3 avec
 File → Import portable project.
@@ -59,7 +65,7 @@ zéro, il faut un modèle (template) par image :
 
 | Image | Interfaces | Pourquoi |
 |---|---|---|
-| `badass-host:1.0` | 2 | En P3, l’hôte 1 est branché sur `eth1`. |
+| `badass-host:1.0` | 2 | En P2 et en P3, un hôte est branché sur `eth1`. |
 | `badass-router:1.0` | 4 | En P3, le route reflector utilise `eth0`, `eth1` et `eth2`. |
 
 ## Vérifications
