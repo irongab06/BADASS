@@ -1,7 +1,5 @@
 # BADASS — P2
 
-Auteur : gacavali
-
 Deux hôtes, chacun derrière son routeur, se parlent comme s’ils étaient
 branchés sur le même switch. Le lien entre les deux routeurs est un tunnel
 VXLAN d’identifiant 10, d’abord en mode statique, puis en mode multicast.

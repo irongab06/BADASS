@@ -1,0 +1,54 @@
+#!/bin/sh
+# router-gacavali-2 : leaf et VTEP du VXLAN 10.
+# Lien montant : eth0 (10.1.1.2/30) -> router-gacavali-1 (RR). Port de l'hote : eth1.
+# Loopback 1.1.1.2/32 : router-id, adresse de session BGP et adresse du VTEP.
+
+# ---------- Couche 1 : reseau de transport (OSPF, aire 0) ----------
+vtysh <<'EOF'
+configure terminal
+hostname router-gacavali-2
+ip forwarding
+interface eth0
+ ip address 10.1.1.2/30
+ ip ospf area 0
+exit
+interface lo
+ ip address 1.1.1.2/32
+ ip ospf area 0
+exit
+router ospf
+ ospf router-id 1.1.1.2
+exit
+end
+EOF
+
+# ---------- Couche 2 : plan de donnees (VXLAN 10 + bridge) ----------
+# nolearning : le VXLAN n'apprend pas les adresses MAC tout seul, c'est BGP EVPN qui les annonce.
+/sbin/ip link add br0 type bridge
+/sbin/ip link set br0 up
+/sbin/ip link add vxlan10 type vxlan id 10 dstport 4789 local 1.1.1.2 nolearning
+/sbin/ip link set vxlan10 master br0
+/sbin/ip link set eth1 master br0
+/sbin/ip link set vxlan10 up
+
+# MTU 1450 comme en P2 : il reste 50 octets pour l'en-tete VXLAN.
+/sbin/ip link set vxlan10 mtu 1450
+/sbin/ip link set eth1 mtu 1450
+/sbin/ip link set br0 mtu 1450
+
+# ---------- Couche 3 : plan de controle (iBGP + EVPN) ----------
+# advertise-all-vni : annoncer au RR les VNI locaux et les adresses MAC vues sur br0.
+vtysh <<'EOF'
+configure terminal
+router bgp 1
+ bgp router-id 1.1.1.2
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.1 remote-as 1
+ neighbor 1.1.1.1 update-source lo
+ address-family l2vpn evpn
+  neighbor 1.1.1.1 activate
+  advertise-all-vni
+ exit-address-family
+exit
+end
+EOF

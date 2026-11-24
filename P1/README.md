@@ -1,11 +1,9 @@
 # BADASS — P1
 
-Auteur : gacavali
-
 ## Contenu
 
 - _gacavali-1_host : Dockerfile de l’hôte host-gacavali-1 (Alpine).
-- _gacavali-1 : Dockerfile du routeur router-gacavali-1 (Alpine avec FRRouting).
+- _gacavali-2 : Dockerfile du routeur router-gacavali-2 (Alpine avec FRRouting).
 - start.sh : démarrage des services, puis du shell.
 - frr.conf : configuration initiale BGP et OSPF.
 - P1.gns3project : export ZIP avec topologie et images Docker.
@@ -20,7 +18,7 @@ Depuis la racine du dépôt :
 
 ```bash
 docker build -t badass-host:1.0 -f P1/_gacavali-1_host P1
-docker build -t badass-router:1.0 -f P1/_gacavali-1 P1
+docker build -t badass-router:1.0 -f P1/_gacavali-2 P1
 ```
 
 ## Restaurer sur une VM Linux amd64
@@ -36,6 +34,23 @@ Importer ensuite P1.gns3project dans GNS3 avec
 File → Import portable project.
 
 Démarrer les deux équipements et ouvrir leurs consoles.
+
+## Ajouter une image Docker dans GNS3 à la main
+
+L’import du projet crée déjà les deux équipements. Pour en créer un depuis
+zéro, il faut un modèle (template) par image :
+
+1. Edit → Preferences → Docker containers → New.
+2. Choisir « Existing image », puis l’image dans la liste.
+3. Donner un nom, puis le nombre d’interfaces (adapters).
+4. Laisser la commande de démarrage vide et la console sur telnet.
+5. Valider : le modèle apparaît dans la liste des équipements, à glisser
+   dans le projet.
+
+| Image | Interfaces | Pourquoi |
+|---|---|---|
+| `badass-host:1.0` | 2 | En P3, l’hôte 1 est branché sur `eth1`. |
+| `badass-router:1.0` | 4 | En P3, le route reflector utilise `eth0`, `eth1` et `eth2`. |
 
 ## Vérifications
 

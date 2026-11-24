@@ -1,0 +1,52 @@
+#!/bin/sh
+# router-gacavali-1 : spine et route reflector BGP (RR). Pas de VXLAN ni d'hote ici.
+# Liens : eth0 -> router-gacavali-2, eth1 -> router-gacavali-3, eth2 -> router-gacavali-4 (un /30 chacun).
+# Loopback 1.1.1.1/32 : router-id, identite OSPF et adresse de session BGP.
+
+# ---------- Couche 1 : reseau de transport (OSPF, aire 0) ----------
+vtysh <<'EOF'
+configure terminal
+hostname router-gacavali-1
+! Routeur de transit : sans cette ligne, il jette les paquets VXLAN entre les leaves.
+ip forwarding
+interface eth0
+ ip address 10.1.1.1/30
+ ip ospf area 0
+exit
+interface eth1
+ ip address 10.1.1.5/30
+ ip ospf area 0
+exit
+interface eth2
+ ip address 10.1.1.9/30
+ ip ospf area 0
+exit
+interface lo
+ ip address 1.1.1.1/32
+ ip ospf area 0
+exit
+router ospf
+ ospf router-id 1.1.1.1
+exit
+end
+EOF
+
+# ---------- Couche 3 : plan de controle (iBGP + EVPN) ----------
+# Les leaves ne sont pas listes un par un : tout voisin dont l'adresse est dans
+# 1.1.1.0/29 est accepte dans le groupe LEAVES (relations dynamiques).
+vtysh <<'EOF'
+configure terminal
+router bgp 1
+ bgp router-id 1.1.1.1
+ no bgp default ipv4-unicast
+ neighbor LEAVES peer-group
+ neighbor LEAVES remote-as 1
+ neighbor LEAVES update-source lo
+ bgp listen range 1.1.1.0/29 peer-group LEAVES
+ address-family l2vpn evpn
+  neighbor LEAVES activate
+  neighbor LEAVES route-reflector-client
+ exit-address-family
+exit
+end
+EOF
