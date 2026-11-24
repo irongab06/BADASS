@@ -6,8 +6,6 @@
 # ---------- Couche 1 : reseau de transport (OSPF, aire 0) ----------
 vtysh <<'EOF'
 configure terminal
-hostname router-gacavali-2
-ip forwarding
 interface eth0
  ip address 10.1.1.2/30
  ip ospf area 0
@@ -30,11 +28,6 @@ EOF
 /sbin/ip link set vxlan10 master br0
 /sbin/ip link set eth1 master br0
 /sbin/ip link set vxlan10 up
-
-# MTU 1450 comme en P2 : il reste 50 octets pour l'en-tete VXLAN.
-/sbin/ip link set vxlan10 mtu 1450
-/sbin/ip link set eth1 mtu 1450
-/sbin/ip link set br0 mtu 1450
 
 # ---------- Couche 3 : plan de controle (iBGP + EVPN) ----------
 # advertise-all-vni : annoncer au RR les VNI locaux et les adresses MAC vues sur br0.

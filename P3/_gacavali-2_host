@@ -2,5 +2,4 @@
 # host-gacavali-2 : branche sur router-gacavali-3 (eth0 <-> eth0).
 # Tous les hotes sont dans 20.1.1.0/24 : le VXLAN 10 en fait un seul segment Ethernet.
 
-ip link set eth0 mtu 1450
 ip addr add 20.1.1.2/24 dev eth0

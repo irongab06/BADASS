@@ -67,7 +67,7 @@ zéro, il faut un modèle (template) par image :
 Sur l’hôte :
 
 ```sh
-ip -br addr
+ip addr
 ```
 
 Sur le routeur :

@@ -79,7 +79,6 @@ Pour un essai rapide sans redémarrage, dans la console du routeur 1 :
 ```sh
 /sbin/ip link del vxlan10
 /sbin/ip link add vxlan10 type vxlan id 10 local 10.1.1.1 group 239.1.1.1 dev eth0 dstport 4789
-/sbin/ip link set vxlan10 mtu 1450
 /sbin/ip link set vxlan10 master br0
 /sbin/ip link set vxlan10 up
 ```

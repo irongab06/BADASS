@@ -6,7 +6,6 @@
 # ---------- Couche 1 : reseau de transport (OSPF, aire 0) ----------
 vtysh <<'EOF'
 configure terminal
-hostname router-gacavali-1
 ! Routeur de transit : sans cette ligne, il jette les paquets VXLAN entre les leaves.
 ip forwarding
 interface eth0
@@ -41,7 +40,6 @@ router bgp 1
  no bgp default ipv4-unicast
  neighbor LEAVES peer-group
  neighbor LEAVES remote-as 1
- neighbor LEAVES update-source lo
  bgp listen range 1.1.1.0/29 peer-group LEAVES
  address-family l2vpn evpn
   neighbor LEAVES activate
