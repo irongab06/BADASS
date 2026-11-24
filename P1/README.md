@@ -6,6 +6,7 @@
 - _gacavali-2 : Dockerfile du routeur router-gacavali-2 (Alpine avec FRRouting).
 - start.sh : démarrage des services, puis du shell.
 - frr.conf : configuration initiale BGP et OSPF.
+- Makefile : construction des deux images.
 - P1.gns3project : export ZIP avec topologie et images Docker.
 
 Les services Zebra, BGP, OSPF et IS-IS démarrent automatiquement.
@@ -20,6 +21,15 @@ Depuis la racine du dépôt :
 docker build -t badass-host:1.0 -f P1/_gacavali-1_host P1
 docker build -t badass-router:1.0 -f P1/_gacavali-2 P1
 ```
+
+Ou, avec le Makefile :
+
+| Commande | Effet |
+|---|---|
+| `make -C P1` | Construit les deux images. |
+| `make -C P1 check` | Affiche les deux images et la ligne `router bgp` du routeur. |
+| `make -C P1 clean` | Supprime les deux images. |
+| `make -C P1 re` | Supprime puis reconstruit. |
 
 ## Restaurer sur une VM Linux amd64
 
