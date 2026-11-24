@@ -25,7 +25,7 @@ VXLAN d’identifiant 10, d’abord en mode statique, puis en mode multicast.
 
 ## Contenu
 
-Chaque fichier est le `/etc/network/interfaces` d’un équipement.
+Chaque fichier est un script à coller dans la console de son équipement.
 
 | Fichier | Équipement | Mode |
 |---|---|---|
@@ -37,8 +37,8 @@ Chaque fichier est le `/etc/network/interfaces` d’un équipement.
 | `_gacavali-2_g` | router-gacavali-2 | multicast (groupe) |
 | `P2.gns3project` | tous | export ZIP avec topologie et images Docker |
 
-Le projet exporté démarre en mode statique : les fichiers `_s` et `_host`
-sont déjà en place dans les équipements.
+Le projet exporté ne contient que la topologie. La configuration est
+perdue quand un équipement s’arrête.
 
 ## Vocabulaire
 
@@ -63,28 +63,19 @@ Différence entre les deux modes :
 | Statique | Son adresse est écrite à la main : `remote 10.1.1.2`. |
 | Multicast | Les deux routeurs rejoignent le groupe `239.1.1.1` et s’y découvrent. |
 
-## Restaurer
+## Restaurer et lancer
 
-Charger les images Docker comme indiqué dans [P1/README.md](../P1/README.md),
-puis importer P2.gns3project dans GNS3 avec
-File → Import portable project.
+1. Charger les images Docker comme indiqué dans [P1/README.md](../P1/README.md).
+2. Importer P2.gns3project dans GNS3 avec File → Import portable project.
+3. Démarrer les cinq équipements.
+4. Coller dans la console de chaque hôte le contenu de son fichier `_host`.
+5. Coller dans la console de chaque routeur le contenu de son fichier `_s`.
 
 ## Passer du statique au multicast
 
-Sur chaque routeur, clic droit → Edit config, remplacer le contenu par celui
-du fichier `_g` du routeur, puis arrêter et redémarrer le routeur.
-
-Pour un essai rapide sans redémarrage, dans la console du routeur 1 :
-
-```sh
-/sbin/ip link del vxlan10
-/sbin/ip link add vxlan10 type vxlan id 10 local 10.1.1.1 group 239.1.1.1 dev eth0 dstport 4789
-/sbin/ip link set vxlan10 master br0
-/sbin/ip link set vxlan10 up
-```
-
-Même chose sur le routeur 2 avec `local 10.1.1.2`. Ce changement est perdu
-au redémarrage : le routeur relit son fichier de configuration.
+1. Arrêter puis redémarrer les deux routeurs : ils repartent sans
+   configuration. Les hôtes gardent leur adresse.
+2. Coller dans la console de chaque routeur le contenu de son fichier `_g`.
 
 ## Vérifications
 
