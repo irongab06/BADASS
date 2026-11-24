@@ -31,7 +31,7 @@ Ou, avec le Makefile :
 | `make -C P1 check` | Affiche les deux images et la ligne `router bgp` du routeur. |
 | `make -C P1 env` | Vérifie les outils, le service Docker et les groupes de la machine. |
 | `make -C P1 load` | Charge les deux images depuis `P1.gns3project`, sans réseau. |
-| `make -C P1 clean` | Supprime les conteneurs créés à partir des deux images, puis les images. |
+| `make -C P1 clean` | Supprime les machines GNS3 de tous les projets, les conteneurs créés à partir des deux images, puis les images. |
 | `make -C P1 re` | Supprime puis reconstruit. |
 | `make -C P1 help` | Affiche cette liste. |
 

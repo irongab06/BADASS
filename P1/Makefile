@@ -9,7 +9,7 @@ help:
 	@echo "make check   affiche les deux images et la ligne router bgp"
 	@echo "make env     verifie les outils, Docker et les groupes de la machine"
 	@echo "make load    charge les deux images depuis P1.gns3project, sans reseau"
-	@echo "make clean   supprime les conteneurs et les deux images"
+	@echo "make clean   supprime les machines GNS3, les conteneurs et les deux images"
 	@echo "make re      supprime puis reconstruit"
 
 host:
@@ -31,6 +31,7 @@ load:
 	docker image load -i $(IMPORT_DIR)/docker-images-amd64.tar
 
 clean:
+	docker ps -aq --filter name=GNS3 | xargs -r docker rm -f
 	docker ps -aq --filter ancestor=$(HOST_IMAGE) | xargs -r docker rm -f
 	docker ps -aq --filter ancestor=$(ROUTER_IMAGE) | xargs -r docker rm -f
 	-docker image rm $(HOST_IMAGE)
