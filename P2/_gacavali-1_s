@@ -1,18 +1,18 @@
-#!/bin/sh
-# router-gacavali-1 : VXLAN 10 en mode statique.
-# eth0 -> switch-gacavali (reseau de transport). eth1 -> host-gacavali-1.
-
 # Reseau de transport.
-/sbin/ip addr add 10.1.1.1/24 dev eth0
+auto eth0
+iface eth0 inet static
+    address 10.1.1.1
+    netmask 255.255.255.0
 
-# Bridge Ethernet.
-/sbin/ip link add br0 type bridge
+    # Interface vers l'hote.
+    up /sbin/ip link set eth1 up
 
-# Tunnel VXLAN statique vers le routeur 2.
-/sbin/ip link add vxlan10 type vxlan id 10 local 10.1.1.1 remote 10.1.1.2 dev eth0 dstport 4789
+    # Bridge Ethernet.
+    up /sbin/ip link add br0 type bridge
 
-# Interface vers l'hote et tunnel branches sur le bridge.
-/sbin/ip link set eth1 master br0
-/sbin/ip link set vxlan10 master br0
-/sbin/ip link set vxlan10 up
-/sbin/ip link set br0 up
+    # Tunnel VXLAN statique vers le routeur 2.
+    up /sbin/ip link add vxlan10 type vxlan id 10 local 10.1.1.1 remote 10.1.1.2 dev eth0 dstport 4789
+    up /sbin/ip link set eth1 master br0
+    up /sbin/ip link set vxlan10 master br0
+    up /sbin/ip link set vxlan10 up
+    up /sbin/ip link set br0 up

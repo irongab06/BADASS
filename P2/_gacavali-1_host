@@ -1,5 +1,5 @@
-#!/bin/sh
-# host-gacavali-1 : branche sur router-gacavali-1 (eth1 <-> eth1).
-# Les deux hotes sont dans 30.1.1.0/24 : le VXLAN 10 en fait un seul segment Ethernet.
-
-ip addr add 30.1.1.1/24 dev eth1
+# Premier hote du reseau transporte par VXLAN.
+auto eth1
+iface eth1 inet static
+    address 30.1.1.1
+    netmask 255.255.255.0
