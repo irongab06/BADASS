@@ -1,8 +1,8 @@
-# BADASS — P1
+# BADASS - P1
 
 ## Contenu
 
-- _gacavali-1_host : Dockerfile de l’hôte host-gacavali-1 (Alpine).
+- _gacavali-1_host : Dockerfile de l'hôte host-gacavali-1 (Alpine).
 - _gacavali-2 : Dockerfile du routeur router-gacavali-2 (Alpine avec FRRouting).
 - start.sh : démarrage des services, puis du shell.
 - frr.conf : configuration initiale BGP et OSPF.
@@ -11,7 +11,7 @@
 - P1.gns3project : export ZIP avec topologie et images Docker.
 
 Les services Zebra, BGP, OSPF et IS-IS démarrent automatiquement.
-Aucune adresse IPv4 n’est préconfigurée sur les interfaces.
+Aucune adresse IPv4 n'est préconfigurée sur les interfaces.
 Les deux équipements ne sont pas reliés, comme sur le schéma du sujet.
 
 ## Construire les images
@@ -40,37 +40,20 @@ Ou, avec le Makefile :
 Extraire la sauvegarde des images :
 
 ```bash
-python3 -m zipfile -e P1.gns3project /tmp/badass-p1-import
+python3 -m zipfile -e P1/P1.gns3project /tmp/badass-p1-import
 docker image load -i /tmp/badass-p1-import/docker-images-amd64.tar
 ```
 
 `make -C P1 load` lance ces deux commandes.
 
 Importer ensuite P1.gns3project dans GNS3 avec
-File → Import portable project.
+File -> Import portable project.
 
 Démarrer les deux équipements et ouvrir leurs consoles.
 
-## Ajouter une image Docker dans GNS3 à la main
-
-L’import du projet crée déjà les deux équipements. Pour en créer un depuis
-zéro, il faut un modèle (template) par image :
-
-1. Edit → Preferences → Docker containers → New.
-2. Choisir « Existing image », puis l’image dans la liste.
-3. Donner un nom, puis le nombre d’interfaces (adapters).
-4. Laisser la commande de démarrage vide et la console sur telnet.
-5. Valider : le modèle apparaît dans la liste des équipements, à glisser
-   dans le projet.
-
-| Image | Interfaces | Pourquoi |
-|---|---|---|
-| `badass-host:1.0` | 2 | En P2 et en P3, un hôte est branché sur `eth1`. |
-| `badass-router:1.0` | 4 | En P3, le route reflector utilise `eth0`, `eth1` et `eth2`. |
-
 ## Vérifications
 
-Sur l’hôte :
+Sur l'hôte :
 
 ```sh
 ip addr
@@ -85,5 +68,6 @@ vtysh -c "show running-config"
 
 ## Autre architecture
 
-Sur ARM64, reconstruire les images avec les deux commandes ci-dessus.
+Sur ARM64, reconstruire les images avec les commandes de la section
+[Construire les images](#construire-les-images).
 La sauvegarde fournie contient des images amd64.
